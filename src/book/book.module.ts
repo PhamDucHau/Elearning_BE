@@ -1,0 +1,13 @@
+import { Module } from '@nestjs/common';
+import { BookController } from './book.controller';
+import { BookService } from './book.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { BookSchema } from './schemas/book.schema';
+import { DbModule } from 'src/db/db.module';
+
+@Module({
+  imports: [DbModule],
+  controllers: [BookController],
+  providers: [BookService]
+})
+export class BookModule {}
