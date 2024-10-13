@@ -8,7 +8,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getHello(@Req() req) {
+  getHello(@Req() req:any) {
     return this.appService.getHello(req);
     // return {
     //   message: 'Hello World!',
