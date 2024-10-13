@@ -4,7 +4,8 @@ import { AuthGuard } from 'src/guards/auth.guard';
 import { CreateCourseDto } from './dto/createCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { storageConfig } from 'helpers/config';
+import { storageConfig } from './helpers/config';
+
 
 @UseGuards(AuthGuard)
 @Controller('course')
