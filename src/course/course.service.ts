@@ -164,7 +164,7 @@ export class CourseService {
                 const { page = 1, limit = 10, search = '' } = req.query;
                 const offset = (page - 1) * limit;
                 const queryCoursesByUserId = `
-                                            SELECT elearning."course"."title", elearning."course"."description"
+                                            SELECT *
                                             FROM elearning."connect_user_course" AS cuc
                                             JOIN elearning."user" ON cuc."user_id" = elearning."user"."id" 
                                             JOIN elearning."course" ON cuc."course_id" = elearning."course"."id"
