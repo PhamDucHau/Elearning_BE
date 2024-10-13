@@ -11,7 +11,7 @@ export class CourseService {
     ) { }
 
     async findAllRoleByUser(req) {
-
+        
         const queryListRolesByUserId = `SELECT cur."role_id" 
                                             FROM elearning."connect_user_role" AS cur
                                             JOIN elearning."user" ON cur."user_id" = elearning."user"."id" 
@@ -40,7 +40,9 @@ export class CourseService {
 
         }
         const uniqueArr = await [...new Set(arr)];
-        const res = uniqueArr.some(permission => permission == req.url)
+        const url = req.url.split('?')[0];
+        
+        const res = uniqueArr.some(permission => permission == url)
         return res
     }
 
@@ -156,7 +158,7 @@ export class CourseService {
 
     }
     async getAllCourse(req) {
-       
+        console.log('req.url',req.url)
         try {
 
             const allPermissionByUserId = await this.getAllPermissionByUserId(req)
