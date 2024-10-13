@@ -18,11 +18,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { CourseModule } from './course/course.module';
 import config from './config/config';
 import { CourseEntity } from './db/entities/course-entity';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 
 
 @Module({
   imports: [
+    
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
@@ -52,6 +55,12 @@ import { CourseEntity } from './db/entities/course-entity';
       }),
       inject: [ConfigService], // Inject ConfigService
     }),
+    ServeStaticModule.forRoot(
+      {
+          rootPath: join(__dirname, '../../uploads'), // Đường dẫn đến thư mục uploads
+          serveRoot: '/uploads/', // Tiền tố đường dẫn để truy cập tệp
+      },
+  ),
     // DbModule,
     UserModule,
     RoleModule,
