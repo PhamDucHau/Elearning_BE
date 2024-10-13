@@ -14,7 +14,7 @@ export class CreateCourseDto {
     @IsString()
     time_study: string;
 
-    @IsString()
+    
     image: string;
 
     @IsString()
