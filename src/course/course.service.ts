@@ -65,7 +65,7 @@ export class CourseService {
                     dataUpdateCourse.title, //$2
                     dataUpdateCourse.description, //$3
                     dataUpdateCourse.time_study, //$4
-                    image || dataUpdateCourse.image, //$6
+                    image, //$6
                     dataUpdateCourse.status //$6
                 ]
                 const res = await this.pg.query(`SELECT course_id FROM elearning.connect_user_course WHERE user_id = ${req.userId}`);
