@@ -28,9 +28,10 @@ export class CourseController {
     }
 
     @Post('/update')
-    async updateCourse(@Req() req, @Body() body:UpdateCourseDto){
+    @UseInterceptors(FileInterceptor('image',{storage:storageConfig('image')}))
+    async updateCourse(@Req() req, @Body() body:UpdateCourseDto,@UploadedFile() file: Express.Multer.File){
 
-        return await this.courseService.updateCourse(req,body);
+        return await this.courseService.updateCourse(req,body,file.destination + '/' + file.filename);
     }
 
     // @Post('/upload-avatar')

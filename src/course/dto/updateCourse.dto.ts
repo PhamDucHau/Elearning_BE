@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
 export class UpdateCourseDto {
 
     @IsNotEmpty()
-    @IsNumber()    
+    // @IsNumber()    
     id: number;
 
     @IsString()
@@ -17,7 +17,7 @@ export class UpdateCourseDto {
     @IsString()
     time_study: string;
 
-    @IsString()
+
     image: string;
 
     @IsString()

@@ -46,7 +46,7 @@ export class CourseService {
         return res
     }
 
-    async updateCourse(req, dataUpdateCourse) {
+    async updateCourse(req, dataUpdateCourse,image) {
         try {
             const allPermissionByUserId = await this.getAllPermissionByUserId(req)
             if (allPermissionByUserId) {
@@ -61,12 +61,12 @@ export class CourseService {
                         WHERE id= $1 RETURNING *
                     `;
                 let values = [
-                    dataUpdateCourse.id,
-                    dataUpdateCourse.title,
-                    dataUpdateCourse.description,
-                    dataUpdateCourse.time_study,
-                    dataUpdateCourse.image,
-                    dataUpdateCourse.status
+                    dataUpdateCourse.id, //$1
+                    dataUpdateCourse.title, //$2
+                    dataUpdateCourse.description, //$3
+                    dataUpdateCourse.time_study, //$4
+                    image || dataUpdateCourse.image, //$6
+                    dataUpdateCourse.status //$6
                 ]
                 const res = await this.pg.query(`SELECT course_id FROM elearning.connect_user_course WHERE user_id = ${req.userId}`);
                 const hasCourseCanUpdate = await res.some(course => course.course_id == dataUpdateCourse.id)
