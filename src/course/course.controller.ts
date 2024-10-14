@@ -33,13 +33,13 @@ export class CourseController {
         return await this.courseService.updateCourse(req,body);
     }
 
-    @Post('/upload-avatar')
-    @UseInterceptors(FileInterceptor('image',{storage:storageConfig('image')}))
-    uploadAvatar(@Req() req:any, @UploadedFile() file: Express.Multer.File) {
-        console.log('upload Avartar');
-        console.log('file', file);
-        console.log('File saved at:', file.path);
-        this.courseService.updateImage(req, file.destination + '/' + file.filename);
-    }
+    // @Post('/upload-avatar')
+    // @UseInterceptors(FileInterceptor('image',{storage:storageConfig('image')}))
+    // uploadAvatar(@Req() req:any, @UploadedFile() file: Express.Multer.File) {
+    //     console.log('upload Avartar');
+    //     console.log('file', file);
+    //     console.log('File saved at:', file.path);
+    //     this.courseService.updateImage(req, file.destination + '/' + file.filename);
+    // }
 
 }

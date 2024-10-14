@@ -11,7 +11,7 @@ export class CourseService {
     ) { }
 
     async findAllRoleByUser(req) {
-        
+
         const queryListRolesByUserId = `SELECT cur."role_id" 
                                             FROM elearning."connect_user_role" AS cur
                                             JOIN elearning."user" ON cur."user_id" = elearning."user"."id" 
@@ -41,7 +41,7 @@ export class CourseService {
         }
         const uniqueArr = await [...new Set(arr)];
         const url = req.url.split('?')[0];
-        
+
         const res = uniqueArr.some(permission => permission == url)
         return res
     }
@@ -70,7 +70,7 @@ export class CourseService {
                 ]
                 const res = await this.pg.query(`SELECT course_id FROM elearning.connect_user_course WHERE user_id = ${req.userId}`);
                 const hasCourseCanUpdate = await res.some(course => course.course_id == dataUpdateCourse.id)
-                
+
                 if (hasCourseCanUpdate) {
                     let data = await this.pg.query(queryText, values);
                     return {
@@ -91,7 +91,7 @@ export class CourseService {
             throw new NotFoundException(`${error.message}`)
         }
     }
-    async createCourse(req, dataCreateCourse,image) {
+    async createCourse(req, dataCreateCourse, image) {
         try {
             const allPermissionByUserId = await this.getAllPermissionByUserId(req)
             if (allPermissionByUserId) {
@@ -134,13 +134,7 @@ export class CourseService {
                 ];
 
                 await this.pg.query(queryTextLinkUserWithCourse, valuesLinkUserWithCourse);
-                if (req.userId != 1) {
-                    const valuesLinkAdminWithCourse = [
-                        1,
-                        res[0].id
-                    ];
-                    await this.pg.query(queryTextLinkUserWithCourse, valuesLinkAdminWithCourse);
-                }
+                
 
                 return {
                     status: 'success',
@@ -158,14 +152,33 @@ export class CourseService {
 
     }
     async getAllCourse(req) {
-        console.log('req.url',req.url)
         try {
 
             const allPermissionByUserId = await this.getAllPermissionByUserId(req)
             if (allPermissionByUserId) {
+                const allRoleByUserId = await this.findAllRoleByUser(req)
+                const isAdmin = await allRoleByUserId.some(role => role.role_id == 1)
+                
                 const { page = 1, limit = 10, search = '' } = req.query;
                 const offset = (page - 1) * limit;
-                const queryCoursesByUserId = `
+                if (isAdmin) {
+                    
+                    const queryCoursesByUserId = `
+                    SELECT *
+                    FROM elearning."course"
+                    WHERE (elearning."course"."title" ILIKE '%${search}%' OR elearning."course"."description" ILIKE '%${search}%')
+                    ORDER BY id ASC
+                    LIMIT ${limit} OFFSET ${offset};
+                    `;
+                    const res = await this.pg.query(queryCoursesByUserId);
+                    return {
+                        message: 'Get Data Successfully',
+                        data: res,
+
+                    }
+                } else {
+
+                    const queryCoursesByUserId = `
                                             SELECT *
                                             FROM elearning."connect_user_course" AS cuc
                                             JOIN elearning."user" ON cuc."user_id" = elearning."user"."id" 
@@ -174,11 +187,12 @@ export class CourseService {
                                             AND (elearning."course"."title" ILIKE '%${search}%' OR elearning."course"."description" ILIKE '%${search}%')
                                             LIMIT ${limit} OFFSET ${offset}
                                             `;
-                const res = await this.pg.query(queryCoursesByUserId);
-                return {
-                    message: 'Get Data Successfully',
-                    data: res,
+                    const res = await this.pg.query(queryCoursesByUserId);
+                    return {
+                        message: 'Get Data Successfully',
+                        data: res,
 
+                    }
                 }
             } else {
                 throw new Error('your rights cannot perform this action')
@@ -188,7 +202,5 @@ export class CourseService {
         }
     }
 
-    async updateImage(req, image){
-        console.log('image', image)
-    }
+    
 }
