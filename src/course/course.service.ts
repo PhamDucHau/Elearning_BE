@@ -166,9 +166,9 @@ export class CourseService {
                     const queryCoursesByUserId = `
                     SELECT *
                     FROM elearning."course"
-                    WHERE (elearning."course"."title" ILIKE '%${search}%' OR elearning."course"."description" ILIKE '%${search}%')
+                    
                     ORDER BY id ASC
-                    LIMIT ${limit} OFFSET ${offset};
+                    
                     `;
                     const res = await this.pg.query(queryCoursesByUserId);
                     return {
@@ -184,8 +184,7 @@ export class CourseService {
                                             JOIN elearning."user" ON cuc."user_id" = elearning."user"."id" 
                                             JOIN elearning."course" ON cuc."course_id" = elearning."course"."id"
                                             WHERE elearning."user"."id" = ${req.userId}
-                                            AND (elearning."course"."title" ILIKE '%${search}%' OR elearning."course"."description" ILIKE '%${search}%')
-                                            LIMIT ${limit} OFFSET ${offset}
+                                          
                                             `;
                     const res = await this.pg.query(queryCoursesByUserId);
                     return {
