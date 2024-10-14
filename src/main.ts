@@ -14,6 +14,11 @@ async function bootstrap() {
   // app.useStaticAssets(join(__dirname, '../../uploads'),{
   //   prefix: '/uploads/', // Thêm tiền tố để truy cập tệp
   // });
+  app.enableCors({
+    origin: '*',  
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
   app.use('/image',express.static('uploads/image'))
   // app.use('/uploads', express.static('/Users/haupham/Desktop/git/ELEARNING_BE/uploads '));
   
