@@ -166,9 +166,7 @@ export class CourseService {
                     const queryCoursesByUserId = `
                     SELECT *
                     FROM elearning."course"
-                    
-                    ORDER BY id DESC
-                    
+                    ORDER BY id DESC;                    
                     `;
                     const res = await this.pg.query(queryCoursesByUserId);
                     return {
@@ -184,8 +182,7 @@ export class CourseService {
                                             JOIN elearning."user" ON cuc."user_id" = elearning."user"."id" 
                                             JOIN elearning."course" ON cuc."course_id" = elearning."course"."id"
                                             WHERE elearning."user"."id" = ${req.userId}
-                                            ORDER BY id DESC
-                                          
+                                            ORDER BY course_id DESC                                           
                                             `;
                     const res = await this.pg.query(queryCoursesByUserId);
                     return {
