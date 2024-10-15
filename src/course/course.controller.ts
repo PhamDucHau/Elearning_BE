@@ -30,17 +30,14 @@ export class CourseController {
     @Post('/update')
     @UseInterceptors(FileInterceptor('image',{storage:storageConfig('image')}))
     async updateCourse(@Req() req, @Body() body:UpdateCourseDto,@UploadedFile() file: Express.Multer.File){
-        const imagePath = file ? `${file.destination}/${file.filename}` : '';
+        const imagePath = file ? `${file.destination}/${file.filename}` : body.image;
         return await this.courseService.updateCourse(req,body,imagePath);
     }
 
-    // @Post('/upload-avatar')
+    @Post('/delete')
     // @UseInterceptors(FileInterceptor('image',{storage:storageConfig('image')}))
-    // uploadAvatar(@Req() req:any, @UploadedFile() file: Express.Multer.File) {
-    //     console.log('upload Avartar');
-    //     console.log('file', file);
-    //     console.log('File saved at:', file.path);
-    //     this.courseService.updateImage(req, file.destination + '/' + file.filename);
-    // }
-
+    async deleteCourse(@Req() req, @Body() body){
+        
+        return await this.courseService.deleteCourse(req,body);
+    }
 }

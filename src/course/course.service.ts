@@ -91,6 +91,52 @@ export class CourseService {
             throw new NotFoundException(`${error.message}`)
         }
     }
+
+    async deleteCourse(req, body) {
+        try {
+            const allPermissionByUserId = await this.getAllPermissionByUserId(req)
+            if (allPermissionByUserId) {
+                const queryFindCourse = 
+                `
+                SELECT course_id
+                FROM elearning."connect_user_course" AS usercourse
+                JOIN elearning."user" ON usercourse."user_id" = elearning."user"."id" 
+                JOIN elearning."course" ON usercourse."course_id" = elearning."course"."id"
+                WHERE elearning."user"."id" = ${req.userId};                
+                `
+                const listCourseById = await this.pg.query(queryFindCourse);
+                const isHasCourse = await listCourseById.some(course => course.course_id == body.id)
+                if (isHasCourse) {
+                    const queryDelete = `
+                    DELETE FROM elearning."connect_user_course"
+                    WHERE "course_id" = ${body.id};`
+                    const resDeleteAllCourseAtConnectUserCourse = await this.pg.query(queryDelete);
+                    if (resDeleteAllCourseAtConnectUserCourse) {
+                        const queryDelete = `
+                        DELETE FROM elearning."course"
+                        WHERE "id" = ${body.id};`
+                        const res = await this.pg.query(queryDelete);
+                        if (res) {
+                            return {
+                                status: 'success',
+                                message: 'Course deleted successfully',
+                                res: res,
+                                idCourse: body.id
+                            }
+                        }
+                        
+                    }
+                    
+                }
+                
+            }
+            
+            
+        } catch (error) {
+            
+        }
+        
+    }
     async createCourse(req, dataCreateCourse, image) {
         try {
             const allPermissionByUserId = await this.getAllPermissionByUserId(req)
