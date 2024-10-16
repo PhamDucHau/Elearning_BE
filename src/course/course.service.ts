@@ -49,7 +49,10 @@ export class CourseService {
     async updateCourse(req, dataUpdateCourse,image) {
         try {
             const allPermissionByUserId = await this.getAllPermissionByUserId(req)
+            const allRoleByUserId = await this.findAllRoleByUser(req)
+            const isAdmin = await allRoleByUserId.some(role => role.role_id == 1)
             if (allPermissionByUserId) {
+                console.log('vo', allPermissionByUserId)
                 let queryText = `
                         UPDATE elearning."course" 
                         SET 
@@ -68,10 +71,9 @@ export class CourseService {
                     image, //$6
                     dataUpdateCourse.status //$6
                 ]
-                const res = await this.pg.query(`SELECT course_id FROM elearning.connect_user_course WHERE user_id = ${req.userId}`);
+                const res = await this.pg.query(`SELECT course_id FROM elearning.connect_user_course WHERE user_id = ${req.userId}`);                
                 const hasCourseCanUpdate = await res.some(course => course.course_id == dataUpdateCourse.id)
-
-                if (hasCourseCanUpdate) {
+                if (hasCourseCanUpdate || isAdmin) {
                     let data = await this.pg.query(queryText, values);
                     return {
                         course: dataUpdateCourse.id,
@@ -80,8 +82,13 @@ export class CourseService {
                         data: data
                     }
                 } else {
+                    
+                        
+                    
                     //case teacher không sở hữu khoá học
+                    console.log(allPermissionByUserId)
                     throw new NotFoundException('You do not have permission to update this course')
+                    
                 }
 
             } else {
@@ -95,6 +102,8 @@ export class CourseService {
     async deleteCourse(req, body) {
         try {
             const allPermissionByUserId = await this.getAllPermissionByUserId(req)
+            const allRoleByUserId = await this.findAllRoleByUser(req)
+            const isAdmin = await allRoleByUserId.some(role => role.role_id == 1)
             if (allPermissionByUserId) {
                 const queryFindCourse = 
                 `
@@ -106,7 +115,7 @@ export class CourseService {
                 `
                 const listCourseById = await this.pg.query(queryFindCourse);
                 const isHasCourse = await listCourseById.some(course => course.course_id == body.id)
-                if (isHasCourse) {
+                if (isHasCourse || isAdmin) {
                     const queryDelete = `
                     DELETE FROM elearning."connect_user_course"
                     WHERE "course_id" = ${body.id};`
@@ -127,13 +136,18 @@ export class CourseService {
                         
                     }
                     
+                }else {
+                    throw new Error('You do not have permission to update this course')
                 }
                 
+            }
+            else {
+                throw new Error('your rights cannot perform this action')
             }
             
             
         } catch (error) {
-            
+            throw new NotFoundException(`${error.message}`)
         }
         
     }
