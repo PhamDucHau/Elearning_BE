@@ -31,4 +31,5 @@ export class CourseContentDetailController {
     async deleteContentCourseDetail(@Req() req, @Body() body:any){       
         return await this.courseContentDetailService.deleteCourseContentDetail(req, body);
     }
+    
 }
