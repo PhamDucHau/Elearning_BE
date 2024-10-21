@@ -20,6 +20,8 @@ import config from './config/config';
 import { CourseEntity } from './db/entities/course-entity';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { CourseDetailModule } from './course-detail/course-detail.module';
+import { CourseContentDetailModule } from './course-content-detail/course-content-detail.module';
 
 
 
@@ -66,6 +68,8 @@ import { join } from 'path';
     RoleModule,
     AuthModule,
     CourseModule,
+    CourseDetailModule,
+    CourseContentDetailModule,
 
     // MongooseModule.forRoot(process.env.DB_URI),
     // BookModule

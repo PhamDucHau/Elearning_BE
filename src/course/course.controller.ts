@@ -23,8 +23,8 @@ export class CourseController {
     @Post('/create')
     @UseInterceptors(FileInterceptor('image',{storage:storageConfig('image')}))
     async createCourse(@Req() req, @Body() body:CreateCourseDto,@UploadedFile() file: Express.Multer.File){
- 
-        return await this.courseService.createCourse(req,body, file.destination + '/' + file.filename);
+        const imagePath = file ? `${file.destination}/${file.filename}` : body.image;
+        return await this.courseService.createCourse(req,body, imagePath);
     }
 
     @Post('/update')

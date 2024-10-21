@@ -1,7 +1,6 @@
-
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator'
-export class CreateCourseDto {
+export class CreateCourseDetailDto {
 
     @IsString()
     @IsNotEmpty()
@@ -17,9 +16,8 @@ export class CreateCourseDto {
     
     image: string;
 
-    @IsString()
-    status: string;
-
-    deleted: boolean;
+    
+    @IsNotEmpty()
+    course_id: number;
 
 }

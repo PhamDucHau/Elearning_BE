@@ -41,6 +41,7 @@ export class CourseService {
         }
         const uniqueArr = await [...new Set(arr)];
         const url = req.url.split('?')[0];
+        console.log('url', url)
 
         const res = uniqueArr.some(permission => permission == url)
         return res
@@ -60,7 +61,8 @@ export class CourseService {
                         description = $3,
                         time_study = $4,
                         image = $5,
-                        status = $6
+                        status = $6,
+                        deleted = $7
                         WHERE id= $1 RETURNING *
                     `;
                 let values = [
@@ -69,7 +71,8 @@ export class CourseService {
                     dataUpdateCourse.description, //$3
                     dataUpdateCourse.time_study, //$4
                     image, //$6
-                    dataUpdateCourse.status //$6
+                    dataUpdateCourse.status, //$6
+                    dataUpdateCourse.deleted //$7
                 ]
                 const res = await this.pg.query(`SELECT course_id FROM elearning.connect_user_course WHERE user_id = ${req.userId}`);                
                 const hasCourseCanUpdate = await res.some(course => course.course_id == dataUpdateCourse.id)
