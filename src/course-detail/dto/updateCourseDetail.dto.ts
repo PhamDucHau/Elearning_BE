@@ -1,7 +1,10 @@
-
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsString } from 'class-validator'
-export class CreateCourseDto {
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
+export class UpdateCourseDetailDto {
+
+    @IsNotEmpty()
+    // @IsNumber()    
+    id: number;
 
     @IsString()
     @IsNotEmpty()
@@ -14,12 +17,9 @@ export class CreateCourseDto {
     @IsString()
     time_study: string;
 
-    
+
     image: string;
 
-    @IsString()
-    status: string;
 
-    deleted: boolean;
 
 }
