@@ -22,4 +22,9 @@ export class CreateCourseDto {
 
     deleted: boolean;
 
+    price: number;
+
+    old_price: number;
+
+    star: number;
 }

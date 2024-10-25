@@ -36,5 +36,10 @@ export class CourseDetailController {
         return await this.courseService.updateCourseDetail(req,body,imagePath);
     }
 
+    @Post('/delete')
+    async deleteCourseDetail(@Req() req, @Body() body:any){
+        return await this.courseService.deleteCourseDetail(req,body);
+    }
+
     
 }

@@ -80,8 +80,8 @@ export class CourseDetailService {
                 
                 const { course_id, title, description, time_study } = body;
                 const query = `
-                INSERT INTO elearning."course_detail" (course_id, title, description, time_study, image) 
-                VALUES (${course_id}, '${title}', '${description}', '${time_study}', '${image}')
+                INSERT INTO elearning."course_detail" (course_id, title, description, time_study, image, deleted) 
+                VALUES (${course_id}, '${title}', '${description}', '${time_study}', '${image}', false)
                 `;
                 const res = await this.pg.query(query);
                 return {
@@ -111,7 +111,7 @@ export class CourseDetailService {
                     const queryCoursesByUserId = `
                     SELECT *
                     FROM elearning."course_detail"
-                    WHERE course_id = ${course_id}
+                    WHERE course_id = ${course_id} AND deleted = false
                     ORDER BY id ASC;                    
                     `;
                     const res = await this.pg.query(queryCoursesByUserId);
@@ -126,4 +126,24 @@ export class CourseDetailService {
             throw new NotFoundException(`${error.message}`)
         }
     }
+
+    async deleteCourseDetail(req, body){
+        try {
+            const allPermissionByUserId = await this.getAllPermissionByUserId(req)
+            if (allPermissionByUserId) {
+                const { id } = body;
+                const query = `UPDATE elearning."course_detail" SET deleted = true WHERE id = ${id}`;
+                const res = await this.pg.query(query);
+                return {
+                    status: 'success',
+                    message: 'Course deleted successfully',
+                    data: res
+                }
+            } else {    
+                throw new Error('your rights cannot perform this action')
+            }       
+        } catch (error) {
+            throw new NotFoundException(`${error.message}`)
+        }
+    }           
 }
