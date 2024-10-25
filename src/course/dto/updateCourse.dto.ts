@@ -23,4 +23,9 @@ export class UpdateCourseDto {
     @IsString()
     status: string;
 
+    price: number;
+
+    old_price: number;
+
+    star: number;
 }

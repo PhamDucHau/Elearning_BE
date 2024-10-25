@@ -40,4 +40,30 @@ export class CourseController {
         
         return await this.courseService.deleteCourse(req,body);
     }
+
+    @Get('/get-user-by-course')
+    async getUserByCourse(@Req() req){
+        return await this.courseService.getUserByCourse(req);
+    }
+
+    @Get('/get-user-not-active-course')
+    async getUserNotActiveCourse(@Req() req){
+        return await this.courseService.getUserNotActiveCourse(req);
+    }
+
+    @Post('/add-user-to-course')
+    async addUserToCourse(@Req() req, @Body() body){
+        return await this.courseService.addUserToCourse(req,body);
+    }
+
+    @Post('/remove-user-from-course')
+    async removeUserFromCourse(@Req() req, @Body() body){
+        return await this.courseService.removeUserFromCourse(req,body);
+    }
+
+    @Get('/get-course-prominent')
+    async getCourseProminent(@Req() req){
+        return await this.courseService.getCourseProminent(req);
+    }
+    
 }

@@ -95,6 +95,14 @@ export class AuthService {
             `SELECT * FROM elearning."user" WHERE elearning."user"."email" = $1`, 
             [email]
         );
+        const roleByUserId = await this.pg.query(
+            `SELECT name_role 
+            FROM elearning."connect_user_role" AS usercourse
+            JOIN elearning."user" ON usercourse."user_id" = elearning."user"."id" 
+            JOIN elearning."role" ON usercourse."role_id" = elearning."role"."id"
+            WHERE elearning."user"."id" = $1;`, 
+            [user[0].id]
+        );
         if(!user[0]){
             
             throw new UnauthorizedException('Wrong credentials');
@@ -114,10 +122,13 @@ export class AuthService {
         
         
         const tokens = await this.generateUserTokens(user[0].id);
+        console.log('user',user)
+        
        
         return {
             ...tokens,
             userId: user[0].id,
+            role: roleByUserId
            
         }
 
