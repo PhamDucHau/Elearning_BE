@@ -127,10 +127,6 @@ export class CourseService {
         }
         
     }
-
-
-
-
     async addUserToCourse(req,body){
         try {
             const allPermissionByUserId = await this.getAllPermissionByUserId(req)
@@ -199,24 +195,26 @@ export class CourseService {
         try {
             const allPermissionByUserId = await this.getAllPermissionByUserId(req)
             if(allPermissionByUserId){
-                const { course_id } = req.query;
-                const queryListUserByCourseId = `SELECT u.id FROM elearning."connect_user_course" AS usercourse
-                                JOIN elearning."user" AS u ON usercourse."user_id" = u."id" 
-                                JOIN elearning."course" ON usercourse."course_id" = elearning."course"."id"
-                                WHERE course_id = ${course_id}`
-                const resListUserByCourseId = await this.pg.query(queryListUserByCourseId);
-               
-                const idsToExclude = resListUserByCourseId.map(item => item.id);
-                const query = idsToExclude.length > 0 
-    ? `SELECT u.id, u.name_user, u.email, u.mobie, u.gender FROM elearning."user" AS u
-       WHERE u.id NOT IN (${idsToExclude.join(', ')})`
-    : `SELECT u.id, u.name_user, u.email, u.mobie, u.gender FROM elearning."user" AS u`;
-                const resListUserNotActiveCourse = await this.pg.query(query);
-                
+                const { course_id, page = 1, size = 10, search = '' } = req.query; 
+                const pageNumber = parseInt(page, 10);
+                const pageSize = parseInt(size, 10);
+                const offset = (pageNumber - 1) * pageSize;
 
+                let queryListUserNotActiveByCourseId = `SELECT u.id, u.name_user, u.email, u.mobie, u.gender FROM elearning."user" AS u `
+                const values: (string | number)[] = [pageSize, offset];
+                if(typeof search === 'string' && search.length > 0){
+                    queryListUserNotActiveByCourseId += ` WHERE id NOT IN (SELECT user_id FROM elearning."connect_user_course" WHERE course_id = ${course_id}) AND u.name_user ILIKE $3`;
+                    values.push(`%${search}%`); // Thêm `search` vào `values` tại $1
+                }else{
+                    queryListUserNotActiveByCourseId += ` WHERE id NOT IN (SELECT user_id FROM elearning."connect_user_course" WHERE course_id = ${course_id})`;
+                }
+                queryListUserNotActiveByCourseId += ` ORDER BY u.id DESC LIMIT $1 OFFSET $2`;
+                const resListUserNotActiveByCourseId = await this.pg.query(queryListUserNotActiveByCourseId, values);
+                const total = await this.pg.query(`SELECT COUNT(*) FROM elearning."user" WHERE id NOT IN (SELECT user_id FROM elearning."connect_user_course" WHERE course_id = ${course_id})`)              
                 return {
                     message: 'Get Data Successfully',
-                    data: resListUserNotActiveCourse
+                    data: resListUserNotActiveByCourseId,
+                    total: total[0].count
                 };
             }else{
                 throw new Error('your rights cannot perform this action')
@@ -235,15 +233,30 @@ export class CourseService {
             // const allRoleByUserId = await this.findAllRoleByUser(req)
             // const isAdmin = await allRoleByUserId.some(role => role.role_id == 1)
             if (allPermissionByUserId) {
-                const { course_id } = req.query;
-                const query = `SELECT u.id, u.name_user , u.email, u.mobie, u.gender FROM elearning."connect_user_course" AS usercourse
+                const { course_id, page = 1, size = 10, search = '' } = req.query;
+                const pageNumber = parseInt(page, 10);
+                const pageSize = parseInt(size, 10);
+                const offset = (pageNumber - 1) * pageSize;
+
+                let query = `SELECT u.id, u.name_user , u.email, u.mobie, u.gender FROM elearning."connect_user_course" AS usercourse
                                 JOIN elearning."user" AS u ON usercourse."user_id" = u."id" 
                                 JOIN elearning."course" ON usercourse."course_id" = elearning."course"."id"
-                                WHERE course_id = ${course_id}`
-                const res = await this.pg.query(query);
+                                `
+                const values: (string | number)[] = [pageSize, offset]; 
+                if (typeof search === 'string' && search.length > 0) {  
+                    query += ` WHERE u.name_user ILIKE $3 AND course_id = ${course_id}`;
+                    values.push(`%${search}%`); // Thêm `search` vào `values` tại $1
+                }else{
+                    query += ` WHERE course_id = ${course_id}`;
+                }         
+                query += ` ORDER BY u.id DESC LIMIT $1 OFFSET $2`;         
+                const res = await this.pg.query(query, values);
+
+                const total = await this.pg.query(`SELECT COUNT(*) FROM elearning."connect_user_course" WHERE course_id = ${course_id}`)
                 return {
                     message: 'Get Data Successfully',
-                    data: res
+                    data: res,
+                    total: total[0].count
                 };
 
             } else {
@@ -434,21 +447,32 @@ export class CourseService {
                 const allRoleByUserId = await this.findAllRoleByUser(req)
                 const isAdmin = await allRoleByUserId.some(role => role.role_id == 1)
 
-                const { page = 1, limit = 10, search = '' } = req.query;
-                const offset = (page - 1) * limit;
-                if (isAdmin) {
-
-                    const queryCoursesByUserId = `
-                    SELECT *
+                const { page = 1, size = 10, search = '' } = req.query;
+                
+                const pageNumber = parseInt(page, 10);
+                const pageSize = parseInt(size, 10);
+                const offset = (pageNumber - 1) * pageSize;
+                
+                if (isAdmin) {         
+                    let queryCoursesByUserId = `
+                    SELECT * 
                     FROM elearning."course"
-                    WHERE "deleted" = false
-                    ORDER BY id DESC;                    
                     `;
-                    const res = await this.pg.query(queryCoursesByUserId);
+                    const values: (string | number)[] = [pageSize, offset];
+                    if (typeof search === 'string' && search.length > 0) {  
+                        queryCoursesByUserId += ` WHERE title ILIKE $3 or description ILIKE $3 or time_study ILIKE $3 and deleted = false`;
+                        values.push(`%${search}%`); // Thêm `search` vào `values` tại $1
+                    } else {
+                        queryCoursesByUserId += ` WHERE deleted = false`;
+                    }
+                    queryCoursesByUserId += ` ORDER BY id DESC LIMIT $1 OFFSET $2`; 
+
+                    const res = await this.pg.query(queryCoursesByUserId, values);
+                    const total = await this.pg.query(`SELECT COUNT(*) FROM elearning."course" WHERE deleted = false`)
                     return {
                         message: 'Get Data Successfully',
                         data: res,
-
+                        total: total[0].count
                     }
                 } else {
 

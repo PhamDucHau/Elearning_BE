@@ -5,7 +5,7 @@ export class CreateUserDto {
 
     @IsString()
     @IsNotEmpty()
-    name: string;
+    name_user: string;
 
     @IsString()
     @IsNotEmpty()
@@ -17,15 +17,11 @@ export class CreateUserDto {
 
     @IsString()
     @IsNotEmpty()
-    mobile: string;
+    mobie: string;
 
     @IsString()
     @IsNotEmpty()
     gender: string;
-
-    
-    @IsNotEmpty()
-    role_id: number;
 
     @Transform(({value}) => value && new Date(value))
     date_of_birth: Date;

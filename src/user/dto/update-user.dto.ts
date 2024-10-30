@@ -5,7 +5,7 @@ export class UpdateUserDto {
 
     @IsString() 
     @IsNotEmpty()
-    name?: string;
+    name_user?: string;
 
     @IsString() 
     email?: string;
@@ -14,7 +14,7 @@ export class UpdateUserDto {
     password?: string;
 
     @IsString() 
-    mobile?: string;
+    mobie?: string;
 
     @IsString() 
     gender?: string;
