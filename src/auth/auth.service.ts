@@ -123,12 +123,14 @@ export class AuthService {
         
         const tokens = await this.generateUserTokens(user[0].id);
         console.log('user',user)
+        delete user[0].password
         
        
         return {
             ...tokens,
             userId: user[0].id,
-            role: roleByUserId
+            role: roleByUserId,
+            user_info: user[0]
            
         }
 
