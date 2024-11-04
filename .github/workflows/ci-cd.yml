@@ -44,4 +44,13 @@ jobs:
           docker pull haupham2311/elearning-be:latest
           docker stop my-ealearning-app || true
           docker rm my-ealearning-app || true
+
+          echo "Checking for any process using port 3000..."
+          if sudo lsof -i :3000; then
+          echo "Port 3000 is in use, attempting to free it..."
+          sudo fuser -k 3000/tcp || true
+          fi
+
+          echo "Running new container..."
+
           docker run -d --name my-ealearning-app -p 3000:3000 haupham2311/elearning-be:latest
