@@ -18,7 +18,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t haupham2311/elearning-be-d:latest .
+        docker build -t haupham2311/elearning-be:latest .
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v1
@@ -28,7 +28,7 @@ jobs:
 
     - name: Push Docker image
       run: |
-        docker push haupham2311/elearning-be-d:latest
+        docker push haupham2311/elearning-be:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -41,7 +41,7 @@ jobs:
         username: root
         password: 6V5oAhG3Y5xj3068  # Hoặc sử dụng private key
         script: |
-          docker pull haupham2311/elearning-be-d:latest
+          docker pull haupham2311/elearning-be:latest
           docker stop my-ealearning-app || true
           docker rm my-ealearning-app || true
-          docker run -d --name my-ealearning-app -p 3000:3000 haupham2311/elearning-be-d:latest
+          docker run -d --name my-ealearning-app -p 3000:3000 haupham2311/elearning-be:latest
