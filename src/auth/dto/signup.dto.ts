@@ -15,12 +15,12 @@ export class SingupDto {
     @IsNotEmpty()
     password: string;
 
-    @IsString()
-    @IsNotEmpty()
+ 
+    
     mobie: string;
 
-    @IsString()
-    @IsNotEmpty()
+   
+    
     gender: string;
 
    
